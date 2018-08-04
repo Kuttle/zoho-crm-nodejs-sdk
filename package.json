@@ -1,0 +1,31 @@
+{
+  "name": "zoho-crm-nodejs-sdk",
+  "version": "1.0.0",
+  "description": "allows the oauth save load functions to be passed in as an object, not as a module",
+  "main": "lib/js/ZCRMRestClient",
+  "scripts": {
+    "test": "jest"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Kuttle/zoho-crm-nodejs-sdk.git"
+  },
+  "keywords": [
+    "zoho",
+    "sdk",
+    "nodejs"
+  ],
+  "author": "Edward Sutton",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Kuttle/zoho-crm-nodejs-sdk/issues"
+  },
+  "homepage": "https://github.com/Kuttle/zoho-crm-nodejs-sdk#readme",
+  "dependencies": {
+    "fs": "0.0.1-security",
+    "mysql": "^2.15.0",
+    "properties-reader": "0.0.16",
+    "querystring": "^0.2.0",
+    "request": "^2.81.0"
+  }
+}
