@@ -26,6 +26,7 @@
     "mysql": "^2.15.0",
     "properties-reader": "0.0.16",
     "querystring": "^0.2.0",
-    "request": "^2.81.0"
+    "request": "^2.81.0",
+    "zoho-crm-serverless-spotinst-storage": "https://github.com/Kuttle/zoho-crm-serverless-spotinst-storage.git"
   }
 }
