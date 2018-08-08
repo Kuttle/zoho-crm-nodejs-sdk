@@ -19,5 +19,4 @@ function API() {
     };
 }
 exports.API = API;
-module.exports = API;
 //# sourceMappingURL=crmapi.js.map

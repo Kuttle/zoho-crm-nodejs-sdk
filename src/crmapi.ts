@@ -26,5 +26,3 @@ export function API(): IAPI {
     FUNCTIONS: functions(),
   };
 }
-
-module.exports = API;
