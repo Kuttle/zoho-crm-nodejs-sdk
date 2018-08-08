@@ -1,5 +1,6 @@
 import * as qs from 'querystring';
 import * as httpclient from 'request';
+import { ZCRMRestClient } from './ZCRMRestClient';
 
 const actionvsurl = {
   generate_token: '/oauth/v2/token',
@@ -70,10 +71,9 @@ export function OAuth(
 
   return {
     constructurl: function constructurl(action: string) {
-      var crmclient = require('./ZCRMRestClient');
       var url =
         'https://' +
-        crmclient.getIAMUrl() +
+        ZCRMRestClient.IAMUrl +
         actionvsurl[action] +
         '?' +
         qs.stringify(config);

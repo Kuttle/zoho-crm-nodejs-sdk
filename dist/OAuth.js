@@ -2,6 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 var qs = require("querystring");
 var httpclient = require("request");
+var ZCRMRestClient_1 = require("./ZCRMRestClient");
 var actionvsurl = {
     generate_token: '/oauth/v2/token',
 };
@@ -34,9 +35,8 @@ function OAuth(configuration, action) {
     config = configuration;
     return {
         constructurl: function constructurl(action) {
-            var crmclient = require('./ZCRMRestClient');
             var url = 'https://' +
-                crmclient.getIAMUrl() +
+                ZCRMRestClient_1.ZCRMRestClient.IAMUrl +
                 actionvsurl[action] +
                 '?' +
                 qs.stringify(config);
