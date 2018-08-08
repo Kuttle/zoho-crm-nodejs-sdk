@@ -1,28 +1,35 @@
-function promiseResponse(request) {
-  var crmclient = require('./ZCRMRestClient');
-  var OAuth = require('./OAuth');
+import { ZCRMRestClient, IZCRMRestClient } from './ZCRMRestClient';
+import { IOAuth, OAuth, IRefreshAccessToken } from './OAuth';
+import {
+  IStorage,
+  IGetAuthTokenResult,
+  HTTP_METHODS,
+} from './commonInterfaces';
+export function promiseResponse(request): Promise<any> {
+  const crmclient: IZCRMRestClient = ZCRMRestClient;
 
   return new Promise(function(resolve, reject) {
-    var mysql_util = crmclient.getMySQLModule();
-    mysql_util
-      .getOAuthTokens(crmclient.getUserIdentifier())
-      .then(function(response) {
-        var date = new Date();
-        var current_time = date.getTime();
+    const storageUtil: IStorage = crmclient.storageModule;
+    storageUtil
+      .getOAuthTokens(crmclient.userIdentifier)
+      .then(function(response: IGetAuthTokenResult[]) {
+        const date: Date = new Date();
+        const current_time: number = date.getTime();
 
-        var expires_in = response[0].expirytime;
-        var refresh_token = response[0].refreshtoken;
+        const expires_in: number = response[0].expirytime;
+        const refresh_token: string = response[0].refreshtoken;
 
         if (current_time > expires_in) {
-          var config = crmclient.getConfig_refresh(refresh_token);
+          const config: IRefreshAccessToken = crmclient.getConfig_refresh(
+            refresh_token
+          );
+          const oauth: IOAuth = OAuth(config, 'refresh_access_token');
+          const url = oauth.constructurl('generate_token');
 
-          new OAuth(config, 'refresh_access_token');
-          var url = OAuth.constructurl('generate_token');
+          oauth.generateTokens(url).then(function(response) {
+            const result_obj = crmclient.parseAndConstructObject(response);
 
-          OAuth.generateTokens(url).then(function(response) {
-            var result_obj = crmclient.parseAndConstructObject(response);
-
-            mysql_util.updateOAuthTokens(result_obj).then(function(response) {
+            storageUtil.updateOAuthTokens(result_obj).then(function(response) {
               makeapicall(request).then(function(response) {
                 resolve(response);
               });
@@ -37,33 +44,32 @@ function promiseResponse(request) {
   });
 }
 
-function makeapicall(request) {
+function makeapicall(request): Promise<any> {
   return new Promise(function(resolve, reject) {
-    var crmclient = require('./ZCRMRestClient');
-    var httpclient = require('request');
-    var OAuth = require('./OAuth');
-    var mysql_util = crmclient.getMySQLModule();
-    var qs = require('querystring');
+    const crmclient: IZCRMRestClient = ZCRMRestClient;
+    const httpclient = require('request');
+    const storageUtil: IStorage = crmclient.storageModule;
+    const qs = require('querystring');
 
-    mysql_util
-      .getOAuthTokens(crmclient.getUserIdentifier())
+    storageUtil
+      .getOAuthTokens(crmclient.userIdentifier)
       .then(function(result_obj) {
-        var access_token = result_obj[0].accesstoken;
-        var baseUrl =
+        const access_token: string = result_obj[0].accesstoken;
+        let baseUrl: string =
           'https://' +
-          crmclient.getAPIURL() +
+          crmclient.apiURL +
           '/crm/' +
-          crmclient.getVersion() +
+          crmclient.version +
           '/' +
           request.url;
         if (request.params) {
           baseUrl = baseUrl + '?' + request.params;
         }
 
-        var api_headers = {};
-        var encoding = 'utf8';
-        var req_body = null;
-        var formData = null;
+        let api_headers: any = {};
+        let encoding: string = 'utf8';
+        let req_body = null;
+        let formData = null;
 
         if (request.download_file) {
           encoding = 'binary'; //No I18N
@@ -72,7 +78,7 @@ function makeapicall(request) {
         var form_Data = null;
 
         if (request.x_file_content) {
-          var FormData = require('form-data');
+          const FormData = require('form-data');
           form_Data = new FormData();
           form_Data.append('file', request.x_file_content); //No I18N
           req_body = form_Data;
@@ -82,11 +88,10 @@ function makeapicall(request) {
         }
 
         if (request.headers) {
-          var header_keys = Object.keys(request.headers);
-
-          for (i in header_keys) {
-            api_headers[header_keys[i]] = request.headers[header_keys[i]];
-          }
+          const header_keys = Object.keys(request.headers);
+          header_keys.forEach(key => {
+            api_headers[key] = request.headers[key];
+          });
         }
 
         api_headers.Authorization = 'Zoho-oauthtoken ' + access_token;
@@ -106,7 +111,7 @@ function makeapicall(request) {
             }
 
             if (response.statusCode == 204) {
-              var respObj = {
+              const respObj = {
                 message: 'no data', //No I18N
                 status_code: '204', //No I18N
               };
@@ -151,10 +156,8 @@ function createParams(parameters) {
   return params;
 }
 
-function constructRequestDetails(input, url, type, isModuleParam) {
-  var requestDetails = {};
-
-  requestDetails.type = type;
+export function constructRequestDetails(input, url, type, isModuleParam) {
+  var requestDetails: any = { type };
 
   if (input != undefined) {
     if (input.id) {
@@ -165,7 +168,7 @@ function constructRequestDetails(input, url, type, isModuleParam) {
     if (input.api_name) {
       url = url.replace('{api_name}', input.api_name);
 
-      var params = {};
+      var params: any = {};
       if (input.params) {
         params = input.params;
       }
@@ -199,8 +202,3 @@ function constructRequestDetails(input, url, type, isModuleParam) {
 
   return requestDetails;
 }
-
-module.exports = {
-  constructRequestDetails: constructRequestDetails,
-  promiseResponse: promiseResponse,
-};
