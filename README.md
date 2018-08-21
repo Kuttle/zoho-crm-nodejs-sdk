@@ -1,6 +1,6 @@
 # Introduction
 This module is a Typescript conversion of zoho's [js SDK](https://www.zoho.com/crm/help/developer/server-side-sdks/node-js.html).
-Unlike their SDK, this one expects a storage mechanism to be passed in such as the one I wrote [here](https://github.com/Kuttle/zoho-crm-serverless-spotinst-storage). For a complete example have a look [here](https://github.com/Kuttle/zoho-crm-serverless). 
+Unlike their SDK, this one expects a storage mechanism to be passed in such as the one I wrote [here](https://github.com/Kuttle/zoho-crm-serverless-spotinst-storage).
 
 This makes this SDK more flexible if your storage mechanism requires any configuration at runtime - unlike [theirs](https://www.zoho.com/crm/help/developer/server-side-sdks/node-js.html#Token_Storage) that uses a module import satement.
 
